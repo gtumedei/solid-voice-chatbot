@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#nprogress {
+  @apply pointer-events-none;
+
+  .bar {
+    @apply fixed top-0 left-0 w-full h-[2px] z-[3000] bg-sky-600;
+  }
+}
+
+@layer components {
+  .container {
+    @apply max-w-3xl;
+  }
+}
