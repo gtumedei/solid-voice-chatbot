@@ -10,8 +10,10 @@ const HomePage = () => {
       <h1 class="text-center text-6xl text-sky-700 font-thin uppercase mb-16">
         Solid Voice Chatbot
       </h1>
-      <LanguageSelector />
-      <VoiceSelector />
+      <div class="grid sm:grid-cols-2 gap-4">
+        <LanguageSelector />
+        <VoiceSelector />
+      </div>
       <TextToSpeech />
       <SpeechToText />
     </div>
@@ -29,9 +31,10 @@ const LanguageSelector = () => {
         onInput={(e) => setLang(e.currentTarget.value)}
         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-300 focus:ring focus:ring-sky-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
       >
+        <option value={undefined}>Default</option>
         <For each={langs}>
           {(variant) => (
-            <option value={variant.value}>
+            <option value={variant.value} selected={variant.value == lang()}>
               {variant.value} • {variant.name}
             </option>
           )}
@@ -42,7 +45,29 @@ const LanguageSelector = () => {
 }
 
 const VoiceSelector = () => {
-  return <p>VoiceSelector</p>
+  const { synthesis } = useSpeech()
+
+  return (
+    <div>
+      <p class="mb-1 block text-sm font-medium text-gray-700">Voice</p>
+      <select
+        value={synthesis.selectedVoice()?.name}
+        onInput={(e) =>
+          synthesis.setSelectedVoice(synthesis.voices()?.find((v) => v.name == e.target.value))
+        }
+        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-300 focus:ring focus:ring-sky-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
+      >
+        <option value={undefined}>Default</option>
+        <For each={synthesis.voices()}>
+          {(voice) => (
+            <option value={voice.name} selected={voice.name == synthesis.selectedVoice()?.name}>
+              {voice.name} • {voice.lang}
+            </option>
+          )}
+        </For>
+      </select>
+    </div>
+  )
 }
 
 const TextToSpeech = () => {
@@ -91,6 +116,7 @@ const SpeechToText = () => {
         <input
           value={recognition.transcript()}
           type="text"
+          placeholder="The transcript will appear here."
           class="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-400 focus:ring focus:ring-sky-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-500"
           readOnly
           disabled={recognition.transcript() == ""}

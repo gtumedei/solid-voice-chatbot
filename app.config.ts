@@ -6,7 +6,7 @@ import Icons from "unplugin-icons/vite"
 import InlineCssModules from "vite-plugin-inline-css-modules"
 
 export default defineConfig({
-  vite: () => ({
+  vite: {
     envPrefix: "PUBLIC_",
     plugins: [Icons({ compiler: "solid" }), InlineCssModules()],
     css: {
@@ -14,5 +14,5 @@ export default defineConfig({
         plugins: [Nesting(), Tailwind(), Autoprefixer()],
       },
     },
-  }),
+  },
 })
