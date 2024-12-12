@@ -1,10 +1,11 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core"
 
 export const Messages = sqliteTable("messages", {
-  id: text("id").notNull(),
-  role: text("role").notNull(),
-  content: text("content").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  id: text().notNull(),
+  role: text().notNull(),
+  content: text(),
+  toolInvocations: text(),
+  createdAt: integer({ mode: "timestamp" }).notNull(),
 })
 
 export type MessageInsert = typeof Messages.$inferInsert

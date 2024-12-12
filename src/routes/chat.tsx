@@ -3,6 +3,7 @@ import { createAsync } from "@solidjs/router"
 import { Component, createEffect, createSignal, For, onMount } from "solid-js"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
+import LoadingSpinner from "~/components/loading-spinner"
 import Markdown from "~/components/markdown"
 import { db } from "~/db"
 import { Messages } from "~/db/schema"
@@ -23,7 +24,12 @@ const getChat = safeQuery(
   z.void(),
   async () => {
     "use server"
-    const messages = await db.select().from(Messages)
+    const messages = (await db.select().from(Messages)).map((message) => ({
+      ...message,
+      toolInvocations: message.toolInvocations
+        ? (JSON.parse(message.toolInvocations) as Message["toolInvocations"])
+        : null,
+    }))
     return messages
   },
   "chat"
@@ -85,7 +91,7 @@ const ChatPage = () => {
             <div class="absolute inset-x-2 bottom-6 flex gap-2 pointer-events-none [&>*]:pointer-events-auto">
               <button
                 type="button"
-                title="Toggle voice output"
+                title="Delete chat"
                 class="rounded-full border border-gray-300 bg-white p-2 text-center text-sm font-medium text-rose-700 shadow-sm transition-all hover:bg-gray-100 focus:ring focus:ring-gray-100 disabled:cursor-not-allowed disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-400 mr-auto"
                 onClick={async () => {
                   if (confirm("Are you sure you want to delete the chat?")) {
@@ -142,25 +148,7 @@ const ChatMessage: Component<{ message: Message; isLoading: boolean }> = (props)
         {props.message.role == "user" ? (
           <TablerUser />
         ) : props.isLoading ? (
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24">
-            <path
-              fill="currentColor"
-              d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"
-              opacity=".25"
-            />
-            <path
-              fill="currentColor"
-              d="M10.14,1.16a11,11,0,0,0-9,8.92A1.59,1.59,0,0,0,2.46,12,1.52,1.52,0,0,0,4.11,10.7a8,8,0,0,1,6.66-6.61A1.42,1.42,0,0,0,12,2.69h0A1.57,1.57,0,0,0,10.14,1.16Z"
-            >
-              <animateTransform
-                attributeName="transform"
-                dur="0.75s"
-                repeatCount="indefinite"
-                type="rotate"
-                values="0 12 12;360 12 12"
-              />
-            </path>
-          </svg>
+          <LoadingSpinner />
         ) : (
           <TablerRobotFace />
         )}
