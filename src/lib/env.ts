@@ -3,6 +3,7 @@ import { type SafeParseSuccess, z, type ZodFormattedError } from "zod"
 
 export const PrivateEnvSchema = z.object({
   OPENAI_API_KEY: z.string(),
+  DATABASE_URL: z.string(),
 })
 
 export const PublicEnvSchema = z.object({})

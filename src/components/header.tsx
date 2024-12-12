@@ -3,7 +3,7 @@ import { css } from "vite-plugin-inline-css-modules"
 
 const Header = () => {
   return (
-    <header class="flex px-6 py-3 border-b border-black/10 relative">
+    <header class="flex px-6 py-3 bg-white border-b border-black/10 sticky top-0">
       <nav class="mx-auto">
         <ul class="flex">
           <li>
