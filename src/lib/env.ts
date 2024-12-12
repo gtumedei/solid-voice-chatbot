@@ -2,12 +2,10 @@ import { isServer } from "solid-js/web"
 import { type SafeParseSuccess, z, type ZodFormattedError } from "zod"
 
 export const PrivateEnvSchema = z.object({
-  TEST_VARIABLE: z.string(),
+  OPENAI_API_KEY: z.string(),
 })
 
-export const PublicEnvSchema = z.object({
-  PUBLIC_TEST_VARIABLE: z.string(),
-})
+export const PublicEnvSchema = z.object({})
 
 const formatErrors = (errors: ZodFormattedError<Map<string, string>, string>) =>
   Object.entries(errors)

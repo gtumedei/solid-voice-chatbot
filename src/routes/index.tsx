@@ -27,7 +27,6 @@ const LanguageSelector = () => {
     <div>
       <p class="mb-1 block text-sm font-medium text-gray-700">Language</p>
       <select
-        value={lang()}
         onInput={(e) => setLang(e.currentTarget.value)}
         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-300 focus:ring focus:ring-sky-200 focus:ring-opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
       >
@@ -51,7 +50,6 @@ const VoiceSelector = () => {
     <div>
       <p class="mb-1 block text-sm font-medium text-gray-700">Voice</p>
       <select
-        value={synthesis.selectedVoice()?.name}
         onInput={(e) =>
           synthesis.setSelectedVoice(synthesis.voices()?.find((v) => v.name == e.target.value))
         }
