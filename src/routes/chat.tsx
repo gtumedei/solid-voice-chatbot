@@ -49,18 +49,21 @@ const ChatPage = () => {
   const [voiceOutputEnabled, setVoiceOutputEnabled] = createSignal(true)
 
   // Scroll to the bottom on page load
-  onMount(() => (document.documentElement.scrollTop = document.documentElement.scrollHeight))
+  onMount(async () => {
+    await new Promise((r) => setTimeout(r, 0))
+    document.documentElement.scrollTop = document.documentElement.scrollHeight
+  })
 
   return (
     <ChatProvider
-      options={{
+      options={() => ({
         initialMessages: chat() as Message[],
         onFinish: (message) => {
           if (voiceOutputEnabled()) synthesis.speak(message.content)
           // Scroll to the bottom when a new message arrives
           document.documentElement.scrollTop = document.documentElement.scrollHeight
         },
-      }}
+      })}
     >
       <div class="container md:max-w-2xl flex flex-col gap-6 pt-16 pb-4 mx-auto">
         <AppTitle>Chat</AppTitle>
