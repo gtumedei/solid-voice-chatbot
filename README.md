@@ -22,8 +22,8 @@ A fully-featured chatbot made with SolidJS and the Vercel AI SDK.
 
 - [x] Implement a UI for every tool
 - [x] Interactive UI messages
-- [ ] Playing state for chat messages
-- [ ] Replay chat messages
+- [x] Playing state for chat messages
+- [x] Replay chat messages
 - [ ] Error handling
 - [ ] Answers with both UI and text
 - [ ] RAG answers with text only (no UI)

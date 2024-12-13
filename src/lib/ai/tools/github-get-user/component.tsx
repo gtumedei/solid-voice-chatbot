@@ -11,7 +11,7 @@ const GithubUserCard: Component<{ user: GithubUserApiResult }> = (props) => {
   const { setInput, handleSubmit } = useChat()
 
   return (
-    <div class="flex flex-col">
+    <>
       <div class="min-w-72 sm:min-w-96 bg-gray-100 py-3 pl-3 pr-6 rounded-lg border border-gray-300">
         <div class="flex gap-4">
           {props.user.avatar_url ? (
@@ -66,7 +66,7 @@ const GithubUserCard: Component<{ user: GithubUserApiResult }> = (props) => {
           )}
         </ul>
       </div>
-      <div class="flex flex-col gap-2 pt-3">
+      <div class="flex flex-col gap-2 mt-3">
         <button
           class="inline-flex items-center gap-2 text-sm font-semibold text-left hover:text-sky-500 transition-colors"
           onClick={() => {
@@ -77,7 +77,7 @@ const GithubUserCard: Component<{ user: GithubUserApiResult }> = (props) => {
           <TablerArrowRight class="text-base text-gray-500" /> Can you list his repositories?
         </button>
       </div>
-    </div>
+    </>
   )
 }
 

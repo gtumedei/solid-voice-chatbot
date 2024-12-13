@@ -37,7 +37,7 @@ const GithubRepoCard: Component<{ repository: GithubRepoApiResult }> = (props) =
         </li>
         <li class="flex gap-2">
           <TablerCalendarEvent class="text-gray-500" />
-          <div class="text-sm space-y-0.5">
+          <div class="text-sm space-y-1">
             <p>
               Created:
               <span class="font-medium">

@@ -1,6 +1,6 @@
 import { Message } from "@ai-sdk/solid"
 import { createAsync } from "@solidjs/router"
-import { Component, createEffect, createSignal, For, onMount, Setter } from "solid-js"
+import { Component, createEffect, createSignal, For, on, onMount } from "solid-js"
 import { z } from "zod"
 import AppTitle from "~/components/app-title"
 import LoadingSpinner from "~/components/loading-spinner"
@@ -11,9 +11,12 @@ import { ChatProvider, useChat } from "~/lib/ai"
 import GithubRepoCard from "~/lib/ai/tools/github-get-repo/component"
 import GithubUserCard from "~/lib/ai/tools/github-get-user/component"
 import GithubRepoListCard from "~/lib/ai/tools/github-list-repos/component"
+import { create } from "~/lib/context"
 import { safeQuery } from "~/lib/safe-data"
 import { useSpeech } from "~/lib/speech"
 import TablerMicrophone from "~icons/tabler/microphone"
+import TablerPlay from "~icons/tabler/play"
+import TablerPlayerStop from "~icons/tabler/player-stop"
 import TablerRobotFace from "~icons/tabler/robot-face"
 import TablerSend2 from "~icons/tabler/send-2"
 import TablerTrash from "~icons/tabler/trash"
@@ -41,16 +44,17 @@ const deleteChat = async () => {
   await db.delete(Messages)
 }
 
+const [VoiceOutputProvider, useVoiceOutput] = create(() => {
+  const [enabled, setEnabled] = createSignal(true)
+  return { enabled, setEnabled }
+})
+
 const ChatPage = () => {
   const chat = createAsync(() => getChat())
 
-  const { synthesis } = useSpeech()
-
-  const [voiceOutputEnabled, setVoiceOutputEnabled] = createSignal(true)
-
   // Scroll to the bottom on page load
   onMount(async () => {
-    await new Promise((r) => setTimeout(r, 0))
+    await new Promise((r) => setTimeout(r, 0)) // Dirty fix for CSR
     document.documentElement.scrollTop = document.documentElement.scrollHeight
   })
 
@@ -58,30 +62,26 @@ const ChatPage = () => {
     <ChatProvider
       options={() => ({
         initialMessages: chat() as Message[],
-        onFinish: (message) => {
-          if (voiceOutputEnabled()) synthesis.speak(message.content)
+        onFinish: () => {
           // Scroll to the bottom when a new message arrives
           document.documentElement.scrollTop = document.documentElement.scrollHeight
         },
       })}
     >
-      <div class="container md:max-w-2xl flex flex-col gap-6 pt-16 pb-4 mx-auto">
-        <AppTitle>Chat</AppTitle>
-        <h1 class="text-center text-6xl text-sky-700 font-thin uppercase mb-8">Chat</h1>
-        <Chat
-          voiceOutputEnabled={voiceOutputEnabled()}
-          setVoiceOutputEnabled={setVoiceOutputEnabled}
-        />
-      </div>
+      <VoiceOutputProvider>
+        <div class="container md:max-w-2xl flex flex-col gap-6 pt-16 pb-4 mx-auto">
+          <AppTitle>Chat</AppTitle>
+          <h1 class="text-center text-6xl text-sky-700 font-thin uppercase mb-8">Chat</h1>
+          <Chat />
+        </div>
+      </VoiceOutputProvider>
     </ChatProvider>
   )
 }
 
-const Chat: Component<{
-  voiceOutputEnabled: boolean
-  setVoiceOutputEnabled: Setter<boolean>
-}> = (props) => {
+const Chat = () => {
   const { recognition } = useSpeech()
+  const voiceOutput = useVoiceOutput()
 
   const { messages, input, setInput, handleInputChange, handleSubmit, isLoading } = useChat()
 
@@ -127,12 +127,12 @@ const Chat: Component<{
             </button>
             <button
               type="button"
-              title="Toggle voice output"
+              title="Toggle automatic voice output"
               class="rounded-full border border-gray-300 bg-white p-2 text-center text-sm font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-100 focus:ring focus:ring-gray-100 disabled:cursor-not-allowed disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-400"
-              classList={{ "!bg-gray-200": !props.voiceOutputEnabled }}
-              onClick={() => props.setVoiceOutputEnabled((v) => !v)}
+              classList={{ "!bg-gray-200": !voiceOutput.enabled() }}
+              onClick={() => voiceOutput.setEnabled((v) => !v)}
             >
-              {props.voiceOutputEnabled ? <TablerVolume /> : <TablerVolume3 />}
+              {voiceOutput.enabled() ? <TablerVolume /> : <TablerVolume3 />}
             </button>
             <button
               type="button"
@@ -158,6 +158,44 @@ const Chat: Component<{
 }
 
 const ChatMessage: Component<{ message: Message; isLoading: boolean }> = (props) => {
+  const { synthesis } = useSpeech()
+  const [isPlaying, setIsPlaying] = createSignal(false)
+
+  const togglePlaying = async () => {
+    if (synthesis.isSpeaking()) {
+      if (!isPlaying()) return
+      window.speechSynthesis.cancel()
+      setIsPlaying(false)
+    } else {
+      setIsPlaying(true)
+      await synthesis.speak(props.message.content)
+      setIsPlaying(false)
+    }
+  }
+
+  // Autoplay new messages
+  // Not very pretty, but basically:
+  // - Registers the initial loading state of the message
+  // - Watches the loading state
+  // - If the message wasLoading and now is not loading anymore, plays the message
+  let wasLoading = props.isLoading
+  const voiceOutput = useVoiceOutput()
+  createEffect(
+    on(
+      () => props.isLoading,
+      (isLoading) => {
+        if (
+          props.message.role != "user" &&
+          voiceOutput.enabled() &&
+          isLoading === false &&
+          wasLoading === true
+        ) {
+          togglePlaying()
+        }
+      }
+    )
+  )
+
   return (
     <div class="flex gap-4">
       <div
@@ -175,11 +213,26 @@ const ChatMessage: Component<{ message: Message; isLoading: boolean }> = (props)
           <TablerRobotFace />
         )}
       </div>
-      {props.message.toolInvocations ? (
-        <UIMessageContent message={props.message} />
-      ) : (
-        <TextMessageContent message={props.message} />
-      )}
+      <div class="flex flex-col">
+        {props.message.toolInvocations ? (
+          <UIMessageContent message={props.message} />
+        ) : (
+          <TextMessageContent message={props.message} />
+        )}
+        {props.message.role != "user" && !props.isLoading && !props.message.toolInvocations && (
+          <div class="mr-auto mt-0.5 relative">
+            <button
+              title={isPlaying() ? "Stop" : "Play"}
+              class="rounded-full border border-transparent bg-transparent p-1.5 text-center text-xs font-medium text-gray-700 shadow-none transition-all hover:bg-gray-100 disabled:bg-transparent disabled:text-gray-400"
+              onClick={togglePlaying}
+              disabled={props.isLoading || (!isPlaying() && synthesis.isSpeaking())}
+            >
+              {isPlaying() ? <TablerPlayerStop /> : <TablerPlay />}
+            </button>
+            {isPlaying() && <LoadingSpinner class="h-3.5 w-3.5 absolute-center-y -right-3.5" />}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
