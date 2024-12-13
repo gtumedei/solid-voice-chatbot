@@ -28,7 +28,7 @@ importers:
         version: 0.15.2(solid-js@1.9.3)
       '@solidjs/start':
         specifier: ^1.0.10
-        version: 1.0.10(solid-js@1.9.3)(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))(vite@5.4.11(@types/node@22.10.2)(terser@5.37.0))
+        version: 1.0.10(solid-js@1.9.3)(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))(vite@5.4.11(@types/node@22.10.2)(terser@5.37.0))
       '@tailwindcss/forms':
         specifier: ^0.5.9
         version: 0.5.9(tailwindcss@3.4.16)
@@ -55,7 +55,7 @@ importers:
         version: 0.30.0
       drizzle-orm:
         specifier: ^0.38.1
-        version: 0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1)
+        version: 0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1)
       marked:
         specifier: ^15.0.3
         version: 15.0.3
@@ -82,7 +82,7 @@ importers:
         version: 0.20.2
       vinxi:
         specifier: ^0.4.3
-        version: 0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2)
+        version: 0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2)
       vite-plugin-inline-css-modules:
         specifier: ^0.0.8
         version: 0.0.8(vite@5.4.11(@types/node@22.10.2)(terser@5.37.0))
@@ -996,6 +996,11 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
+
+  '@libsql/client-wasm@0.14.0':
+    resolution: {integrity: sha512-gB/jtz0xuwrqAHApBv9e9JSew2030Fhj2edyZ83InZ4yPj/Q2LTUlEhaspEYT0T0xsAGqPy38uGrmq/OGS+DdQ==}
+    bundledDependencies:
+      - '@libsql/libsql-wasm-experimental'
 
   '@libsql/client@0.14.0':
     resolution: {integrity: sha512-/9HEKfn6fwXB5aTEEoMeFh4CtG0ZzbncBb1e++OCdVpgKZ/xyMsIVYXm0w7Pv4RUel803vE6LwniB3PqD72R0Q==}
@@ -4091,6 +4096,12 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
+  '@libsql/client-wasm@0.14.0':
+    dependencies:
+      '@libsql/core': 0.14.0
+      js-base64: 3.7.7
+    optional: true
+
   '@libsql/client@0.14.0':
     dependencies:
       '@libsql/core': 0.14.0
@@ -4425,11 +4436,11 @@ snapshots:
     dependencies:
       solid-js: 1.9.3
 
-  '@solidjs/start@1.0.10(solid-js@1.9.3)(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))(vite@5.4.11(@types/node@22.10.2)(terser@5.37.0))':
+  '@solidjs/start@1.0.10(solid-js@1.9.3)(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))(vite@5.4.11(@types/node@22.10.2)(terser@5.37.0))':
     dependencies:
-      '@vinxi/plugin-directives': 0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))
-      '@vinxi/server-components': 0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))
-      '@vinxi/server-functions': 0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))
+      '@vinxi/plugin-directives': 0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))
+      '@vinxi/server-components': 0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))
+      '@vinxi/server-functions': 0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))
       defu: 6.1.4
       error-stack-parser: 2.1.4
       html-to-image: 1.11.11
@@ -4551,7 +4562,7 @@ snapshots:
     transitivePeerDependencies:
       - uWebSockets.js
 
-  '@vinxi/plugin-directives@0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))':
+  '@vinxi/plugin-directives@0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))':
     dependencies:
       '@babel/parser': 7.26.3
       acorn: 8.14.0
@@ -4562,29 +4573,29 @@ snapshots:
       magicast: 0.2.11
       recast: 0.23.9
       tslib: 2.8.1
-      vinxi: 0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2)
+      vinxi: 0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2)
 
-  '@vinxi/server-components@0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))':
+  '@vinxi/server-components@0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))':
     dependencies:
-      '@vinxi/plugin-directives': 0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))
+      '@vinxi/plugin-directives': 0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))
       acorn: 8.14.0
       acorn-loose: 8.4.0
       acorn-typescript: 1.4.13(acorn@8.14.0)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
-      vinxi: 0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2)
+      vinxi: 0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2)
 
-  '@vinxi/server-functions@0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))':
+  '@vinxi/server-functions@0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))':
     dependencies:
-      '@vinxi/plugin-directives': 0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))
+      '@vinxi/plugin-directives': 0.4.3(vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2))
       acorn: 8.14.0
       acorn-loose: 8.4.0
       acorn-typescript: 1.4.13(acorn@8.14.0)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
-      vinxi: 0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2)
+      vinxi: 0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2)
 
   abbrev@2.0.0: {}
 
@@ -4899,10 +4910,10 @@ snapshots:
       '@deno/shim-deno': 0.19.2
       undici-types: 5.28.4
 
-  db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1)):
+  db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1)):
     optionalDependencies:
       '@libsql/client': 0.14.0
-      drizzle-orm: 0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1)
+      drizzle-orm: 0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1)
 
   debug@2.6.9:
     dependencies:
@@ -4955,9 +4966,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1):
+  drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1):
     optionalDependencies:
       '@libsql/client': 0.14.0
+      '@libsql/client-wasm': 0.14.0
       '@opentelemetry/api': 1.9.0
       react: 18.3.1
 
@@ -5658,7 +5670,7 @@ snapshots:
 
   nanoid@5.0.9: {}
 
-  nitropack@2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(typescript@5.7.2):
+  nitropack@2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(typescript@5.7.2):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.3.4
       '@netlify/functions': 2.8.2
@@ -5682,7 +5694,7 @@ snapshots:
       cookie-es: 1.2.2
       croner: 9.0.0
       crossws: 0.3.1
-      db0: 0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))
+      db0: 0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))
       defu: 6.1.4
       destr: 2.0.3
       dot-prop: 9.0.0
@@ -6478,7 +6490,7 @@ snapshots:
 
   validate-html-nesting@1.2.2: {}
 
-  vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2):
+  vinxi@0.4.3(@libsql/client@0.14.0)(@types/node@22.10.2)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(ioredis@5.4.1)(terser@5.37.0)(typescript@5.7.2):
     dependencies:
       '@babel/core': 7.26.0
       '@babel/plugin-syntax-jsx': 7.25.9(@babel/core@7.26.0)
@@ -6500,7 +6512,7 @@ snapshots:
       hookable: 5.5.3
       http-proxy: 1.18.1
       micromatch: 4.0.8
-      nitropack: 2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.1(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(typescript@5.7.2)
+      nitropack: 2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.1(@libsql/client-wasm@0.14.0)(@libsql/client@0.14.0)(@opentelemetry/api@1.9.0)(react@18.3.1))(typescript@5.7.2)
       node-fetch-native: 1.6.4
       path-to-regexp: 6.3.0
       pathe: 1.1.2

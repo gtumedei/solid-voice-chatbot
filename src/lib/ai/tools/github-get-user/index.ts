@@ -6,6 +6,7 @@ const GithubUserApiResultSchema = z.object({
   login: z.string(),
   name: z.string(),
   type: z.string(),
+  avatar_url: z.string().url(),
   html_url: z.string().url(),
   blog: z.string().url().nullable(),
   bio: z.string().nullable(),

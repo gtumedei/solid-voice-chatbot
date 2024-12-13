@@ -1,7 +1,7 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core"
 
 export const Messages = sqliteTable("messages", {
-  id: text().notNull(),
+  id: text().primaryKey(),
   role: text().notNull(),
   content: text(),
   toolInvocations: text(),
