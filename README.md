@@ -25,7 +25,7 @@ A fully-featured chatbot made with SolidJS and the Vercel AI SDK.
 - [x] Playing state for chat messages
 - [x] Replay chat messages
 - [ ] Error handling
-- [ ] Answers with both UI and text
 - [ ] RAG answers with text only (no UI)
   - [ ] For the same RAG call, enable the chatbot to choose if it should display a UI or a text message based on the context
 - [ ] Proactive chatbot: resume the conversation on its own when some event gets triggered
+- [ ] Refactor chat persistence using `ai@4.1.*`

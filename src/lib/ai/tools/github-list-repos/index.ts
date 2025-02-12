@@ -22,7 +22,7 @@ const GithubListReposApiResultSchema = z.array(
 export type GithubListReposApiResult = z.infer<typeof GithubListReposApiResultSchema>
 
 const githubListRepos = tool({
-  description: "Get the list of repositories of a given GitHub user.",
+  description: "List the repositories of a given GitHub user.",
   parameters: z.object({
     username: z.string().describe("The account for which to fetch the list of repositories."),
   }),
