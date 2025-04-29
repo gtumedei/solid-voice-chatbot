@@ -7,13 +7,13 @@ const Header = () => {
       <nav class="mx-auto">
         <ul class="flex">
           <li>
-            <A href="/" end class={classes.navLink} activeClass={classes.navLinkActive}>
-              Home
+            <A href="/chats" class={classes.navLink} activeClass={classes.navLinkActive}>
+              Chats
             </A>
           </li>
           <li>
-            <A href="/chat" class={classes.navLink} activeClass={classes.navLinkActive}>
-              Chat
+            <A href="/speech" class={classes.navLink} activeClass={classes.navLinkActive}>
+              Speech demo
             </A>
           </li>
         </ul>

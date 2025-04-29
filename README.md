@@ -28,4 +28,6 @@ A fully-featured chatbot made with SolidJS and the Vercel AI SDK.
 - [ ] RAG answers with text only (no UI)
   - [ ] For the same RAG call, enable the chatbot to choose if it should display a UI or a text message based on the context
 - [ ] Proactive chatbot: resume the conversation on its own when some event gets triggered
-- [ ] Refactor chat persistence using `ai@4.1.*`
+- [x] Refactor chat display and persistence using `ai@4.1.*`: streamText now always generates one message, but it may contain multiple parts (when maxSteps > 1), like a tool call followed up by a text message. This needs to be handled both on the frontend and when persisting the chat.
+- [ ] Fix message reproduction: sometimes previous messages get played while a new one is being generated
+- [ ] Fix chat deletion from the chat page not redirecting to `/chats`

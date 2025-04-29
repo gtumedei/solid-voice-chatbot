@@ -1,18 +1,15 @@
-import { Message } from "@ai-sdk/solid"
-import { createAsync } from "@solidjs/router"
+import { createAsync, useAction, useParams } from "@solidjs/router"
+import { Message } from "ai"
 import { Component, createEffect, createSignal, For, on, onMount } from "solid-js"
-import { z } from "zod"
 import AppTitle from "~/components/app-title"
 import LoadingSpinner from "~/components/loading-spinner"
 import Markdown from "~/components/markdown"
-import { db } from "~/db"
-import { Messages } from "~/db/schema"
 import { ChatProvider, useChat } from "~/lib/ai"
 import GithubRepoCard from "~/lib/ai/tools/github-get-repo/component"
 import GithubUserCard from "~/lib/ai/tools/github-get-user/component"
 import GithubRepoListCard from "~/lib/ai/tools/github-list-repos/component"
+import { chatMessagesQuery, deleteChatAction } from "~/lib/chats-store"
 import { create } from "~/lib/context"
-import { safeQuery } from "~/lib/safe-data"
 import { useSpeech } from "~/lib/speech"
 import TablerMicrophone from "~icons/tabler/microphone"
 import TablerPlay from "~icons/tabler/play"
@@ -24,33 +21,14 @@ import TablerUser from "~icons/tabler/user"
 import TablerVolume from "~icons/tabler/volume"
 import TablerVolume3 from "~icons/tabler/volume-3"
 
-const getChat = safeQuery(
-  z.void(),
-  async () => {
-    "use server"
-    const messages = (await db.select().from(Messages)).map((message) => ({
-      ...message,
-      toolInvocations: message.toolInvocations
-        ? (JSON.parse(message.toolInvocations) as Message["toolInvocations"])
-        : null,
-    }))
-    return messages
-  },
-  "chat"
-)
-
-const deleteChat = async () => {
-  "use server"
-  await db.delete(Messages)
-}
-
 const [VoiceOutputProvider, useVoiceOutput] = create(() => {
   const [enabled, setEnabled] = createSignal(true)
   return { enabled, setEnabled }
 })
 
 const ChatPage = () => {
-  const chat = createAsync(() => getChat())
+  const params = useParams()
+  const chat = createAsync(() => chatMessagesQuery({ chatId: params.chatId ?? "" }))
 
   // Scroll to the bottom on page load
   onMount(async () => {
@@ -61,7 +39,9 @@ const ChatPage = () => {
   return (
     <ChatProvider
       options={() => ({
+        id: params.chatId,
         initialMessages: chat() as Message[],
+        sendExtraMessageFields: true,
         onFinish: () => {
           // Scroll to the bottom when a new message arrives
           document.documentElement.scrollTop = document.documentElement.scrollHeight
@@ -71,7 +51,7 @@ const ChatPage = () => {
       <VoiceOutputProvider>
         <div class="container md:max-w-2xl flex flex-col gap-6 pt-16 pb-4 mx-auto">
           <AppTitle>Chat</AppTitle>
-          <h1 class="text-center text-6xl text-sky-700 font-thin uppercase mb-8">Chat</h1>
+          <h1 class="text-center text-2xl text-sky-700 uppercase mb-8">Chat</h1>
           <Chat />
         </div>
       </VoiceOutputProvider>
@@ -83,7 +63,17 @@ const Chat = () => {
   const { recognition } = useSpeech()
   const voiceOutput = useVoiceOutput()
 
-  const { messages, input, setInput, handleInputChange, handleSubmit, isLoading } = useChat()
+  const {
+    id: chatId,
+    messages,
+    input,
+    setInput,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+  } = useChat()
+
+  const deleteChat = useAction(deleteChatAction)
 
   // Copy speech transcript to the input field
   createEffect(() => setInput(recognition.transcript))
@@ -118,7 +108,7 @@ const Chat = () => {
               class="rounded-full border border-gray-300 bg-white p-2 text-center text-sm font-medium text-rose-700 shadow-sm transition-all hover:bg-gray-100 focus:ring focus:ring-gray-100 disabled:cursor-not-allowed disabled:border-gray-100 disabled:bg-gray-50 disabled:text-gray-400 mr-auto"
               onClick={async () => {
                 if (confirm("Are you sure you want to delete the chat?")) {
-                  await deleteChat()
+                  await deleteChat({ chatId })
                   location.reload()
                 }
               }}
@@ -214,30 +204,46 @@ const ChatMessage: Component<{ message: Message; isLoading: boolean }> = (props)
         )}
       </div>
       <div class="flex flex-col">
-        {props.message.toolInvocations ? (
-          <UIMessageContent message={props.message} />
-        ) : (
-          <TextMessageContent message={props.message} />
-        )}
-        {props.message.role != "user" && !props.isLoading && !props.message.toolInvocations && (
-          <div class="mr-auto mt-0.5 relative">
-            <button
-              title={isPlaying() ? "Stop" : "Play"}
-              class="rounded-full border border-transparent bg-transparent p-1.5 text-center text-xs font-medium text-gray-700 shadow-none transition-all hover:bg-gray-100 disabled:bg-transparent disabled:text-gray-400"
-              onClick={togglePlaying}
-              disabled={props.isLoading || (!isPlaying() && synthesis.isSpeaking())}
-            >
-              {isPlaying() ? <TablerPlayerStop /> : <TablerPlay />}
-            </button>
-            {isPlaying() && <LoadingSpinner class="h-3.5 w-3.5 absolute-center-y -right-3.5" />}
-          </div>
-        )}
+        <For each={props.message.parts}>
+          {(part) => (
+            <>
+              {part.type == "text" && (
+                <>
+                  <TextMessageContent message={props.message} part={part as any} />
+                  {props.message.role != "user" &&
+                    !props.isLoading &&
+                    !props.message.toolInvocations && (
+                      <div class="mr-auto mt-0.5 relative">
+                        <button
+                          title={isPlaying() ? "Stop" : "Play"}
+                          class="rounded-full border border-transparent bg-transparent p-1.5 text-center text-xs font-medium text-gray-700 shadow-none transition-all hover:bg-gray-100 disabled:bg-transparent disabled:text-gray-400"
+                          onClick={togglePlaying}
+                          disabled={props.isLoading || (!isPlaying() && synthesis.isSpeaking())}
+                        >
+                          {isPlaying() ? <TablerPlayerStop /> : <TablerPlay />}
+                        </button>
+                        {isPlaying() && (
+                          <LoadingSpinner class="h-3.5 w-3.5 absolute-center-y -right-3.5" />
+                        )}
+                      </div>
+                    )}
+                </>
+              )}
+              {part.type == "tool-invocation" && (
+                <UIMessageContent message={props.message} part={part as any} />
+              )}
+            </>
+          )}
+        </For>
       </div>
     </div>
   )
 }
 
-const TextMessageContent: Component<{ message: Message }> = (props) => {
+const TextMessageContent: Component<{
+  message: Message
+  part: Extract<NonNullable<Message["parts"]>[number], { type: "text" }>
+}> = (props) => {
   return (
     <Markdown
       class={`prose prose-sm px-4 py-3 rounded-lg ${
@@ -246,34 +252,33 @@ const TextMessageContent: Component<{ message: Message }> = (props) => {
           : "bg-gray-100 border border-gray-300"
       }`}
     >
-      {props.message.content}
+      {props.part.text}
     </Markdown>
   )
 }
 
-const UIMessageContent: Component<{ message: Message }> = (props) => {
+const UIMessageContent: Component<{
+  message: Message
+  part: Extract<NonNullable<Message["parts"]>[number], { type: "tool-invocation" }>
+}> = (props) => {
   return (
-    <For each={props.message.toolInvocations}>
-      {(toolInvocation) => (
+    <>
+      {props.part.toolInvocation.state == "result" ? (
         <>
-          {toolInvocation.state == "result" ? (
-            <>
-              {toolInvocation.toolName == "githubGetUser" ? (
-                <GithubUserCard user={toolInvocation.result} />
-              ) : toolInvocation.toolName == "githubListRepos" ? (
-                <GithubRepoListCard repositories={toolInvocation.result} />
-              ) : toolInvocation.toolName == "githubGetRepo" ? (
-                <GithubRepoCard repository={toolInvocation.result} />
-              ) : (
-                "unknown tool"
-              )}
-            </>
-          ) : (
-            <TextMessageContent message={{ ...props.message, content: "Loading..." }} />
+          {props.part.toolInvocation.toolName == "githubGetUser" && (
+            <GithubUserCard user={props.part.toolInvocation.result} />
+          )}
+          {props.part.toolInvocation.toolName == "githubListRepos" && (
+            <GithubRepoListCard repositories={props.part.toolInvocation.result} />
+          )}
+          {props.part.toolInvocation.toolName == "githubGetRepo" && (
+            <GithubRepoCard repository={props.part.toolInvocation.result} />
           )}
         </>
+      ) : (
+        <p>Loading...</p>
       )}
-    </For>
+    </>
   )
 }
 
