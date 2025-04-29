@@ -37,7 +37,6 @@ export const POST: APIHandler = async (e) => {
 
   // Save the last user message
   const newUserMessage = messages[messages.length - 1]
-  console.log(newUserMessage)
   if (newUserMessage) {
     await db.insert(Messages).values({
       id: newUserMessage.id,
@@ -48,22 +47,16 @@ export const POST: APIHandler = async (e) => {
     })
   }
 
-  console.log("BEFORE RESPONSE")
-  console.dir(messages, { depth: Infinity })
-
   const result = streamText({
     model,
     system: systemPrompt,
     messages,
     tools: { githubGetUser, githubListRepos, githubGetRepo },
     onFinish: async ({ response }) => {
-      console.log("AFTER RESPONSE")
       const newMessages = appendResponseMessages({
         messages,
         responseMessages: response.messages,
       })
-      console.dir(newMessages, { depth: Infinity })
-      console.log("after 1")
       // Save the chatbot message
       const newAssistantMessage = newMessages[newMessages.length - 1]
       if (newAssistantMessage) {
