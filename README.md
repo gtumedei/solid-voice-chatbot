@@ -7,7 +7,9 @@ A fully-featured chatbot made with SolidJS and the Vercel AI SDK.
 - Clone this repo
 - `cp .env.example .env`, then place your OpenAI API key in `.env`
 - Install dependencies with `pnpm i`
+- Create SQLite db with `pnpm db:push`
 - Run the dev server with `pnpm dev`
+- Open the database editor with `pnpm db:studio`
 
 ## Features
 
